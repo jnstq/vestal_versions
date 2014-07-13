@@ -49,9 +49,11 @@ module VestalVersions
       case value
         when ActiveRecord::Base then self.user_without_name = value
         when Numeric
-          updater = User.find(value)
-          self.user_without_name = updater
-          self.user_name = updater.to_s
+          updater = User.where(id: value).first
+          if updater
+            self.user_without_name = updater
+            self.user_name = updater.to_s
+          end
         else self.user_name = value
       end
     end
