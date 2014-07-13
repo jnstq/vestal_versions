@@ -5,7 +5,9 @@ module VestalVersions
     extend ActiveSupport::Concern
 
     included do
-      attr_accessor :updated_by
+      unless column_names.include?('updated_by')
+        attr_accessor :updated_by
+      end
       Version.class_eval{ include UsersMethods }
     end
 
@@ -46,6 +48,10 @@ module VestalVersions
     def user_with_name=(value)
       case value
         when ActiveRecord::Base then self.user_without_name = value
+        when Numeric
+          updater = User.find(value)
+          self.user_without_name = updater
+          self.user_name = updater.to_s
         else self.user_name = value
       end
     end
